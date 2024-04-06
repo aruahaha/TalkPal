@@ -1,13 +1,33 @@
 {
   "expo": {
-    "scheme": "acme",
+    "scheme": "talkpal",
     "web": {
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-secure-store"
     ],
     "name": "TalkPal",
-    "slug": "TalkPal"
+    "slug": "talkpal",
+    "android": {
+      "package": "com.anonymous.TalkPal"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "bce6a720-07c6-4122-a7bc-0866398f38ce"
+      }
+    },
+    "owner": "evilzeus",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bce6a720-07c6-4122-a7bc-0866398f38ce"
+    },
+    "ios": {}
   }
 }
