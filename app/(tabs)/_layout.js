@@ -8,10 +8,10 @@ const TabLayout = () => {
       screenOptions={{
         tabBarStyle: {
           height: 70,
-          backgroundColor: "white",
+          backgroundColor: "#92C4B3",
         },
         tabBarActiveTintColor: "black",
-        tabBarInactiveTintColor: "gray",
+        tabBarInactiveTintColor: "#FFF9ED",
       }}
     >
       <Tabs.Screen

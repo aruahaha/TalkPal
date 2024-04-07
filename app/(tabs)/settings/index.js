@@ -1,16 +1,20 @@
-import { View, Text, Alert, Button } from "react-native";
+import { View, Text, Alert, Button, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase-client";
 import { Stack } from "expo-router";
 
 const SettingsPage = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         setUser(user);
+        setLoading(false);
       } else {
         Alert.alert("Error Accessing User");
+        setLoading(false);
       }
     });
   }, []);
@@ -21,11 +25,18 @@ const SettingsPage = () => {
       Alert.alert("Error Signing Out", error.message);
     }
   };
+
   return (
     <View className="items-center ">
       <Stack.Screen options={{ headerTitle: "Settings" }} />
-      <Text className="py-5">{JSON.stringify(user)}</Text>
-      <Button title="Logout" onPress={logOut} />
+      {loading ? (
+        <ActivityIndicator size="large" color="black" />
+      ) : (
+        <>
+          <Text className="py-5">{JSON.stringify(user)}</Text>
+          <Button title="Logout" onPress={logOut} />
+        </>
+      )}
     </View>
   );
 };

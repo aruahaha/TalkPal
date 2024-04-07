@@ -8,9 +8,12 @@ import {
   Button,
   Text,
   Pressable,
+  ImageBackground,
+  ActivityIndicator,
 } from "react-native";
 import { supabase } from "../lib/supabase-client";
 import { Stack } from "expo-router";
+import LoginImage from "../../assets/images/LoginImage.png";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -53,50 +56,60 @@ export default function Auth() {
   }
 
   return (
-    <View className="h-full px-5">
-      <Stack.Screen
-        options={{ headerTitle: "Login", headerTitleAlign: "center" }}
-      />
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Text className="text-2xl pb-2">Email</Text>
-        <TextInput
-          label="Email"
-          onChangeText={(text) => setEmail(text)}
-          value={email}
-          placeholder="email@address.com"
-          autoCapitalize={"none"}
-          className="py-5 border-2 border-gray-500 rounded-lg px-3"
-        />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Text className="text-2xl pb-2">Password</Text>
-        <TextInput
-          label="Password"
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          secureTextEntry={true}
-          placeholder="Password"
-          autoCapitalize={"none"}
-          className="py-5 border-2 border-gray-500 rounded-lg px-3"
-        />
-      </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Pressable
-          disabled={loading}
-          onPress={() => signInWithEmail()}
-          className="bg-blue-500 items-center p-4 rounded-lg "
-        >
-          <Text className="text-white text-xl">Sign In</Text>
-        </Pressable>
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Pressable
-          disabled={loading}
-          onPress={() => signUpWithEmail()}
-          className="bg-blue-500 items-center p-4 rounded-lg "
-        >
-          <Text className="text-white text-xl">Sign Up</Text>
-        </Pressable>
+    <View className="w-full h-full">
+      <ImageBackground source={LoginImage} className="w-full h-full" />
+      <Stack.Screen options={{ headerShown: false }} />
+      <View className="absolute w-full items-center justify-center h-full top-[175px]">
+        <View className="w-72">
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Text className="text-center pb-5 text-2xl font-bold">Login</Text>
+            <Text className="text-2xl pb-1">Email</Text>
+            <TextInput
+              label="Email"
+              onChangeText={(text) => setEmail(text)}
+              value={email}
+              placeholder="email@address.com"
+              autoCapitalize={"none"}
+              className="py-2 border-2 border-black rounded-lg px-3"
+            />
+          </View>
+          <View style={styles.verticallySpaced}>
+            <Text className="text-2xl pb-1">Password</Text>
+            <TextInput
+              label="Password"
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              secureTextEntry={true}
+              placeholder="Password"
+              autoCapitalize={"none"}
+              className="py-2 border-2 border-black rounded-lg px-3"
+            />
+          </View>
+          {loading ? (
+            <ActivityIndicator color="black" className="pt-10" size={25} />
+          ) : (
+            <View>
+              <View style={[styles.verticallySpaced, styles.mt20]}>
+                <Pressable
+                  disabled={loading}
+                  onPress={() => signInWithEmail()}
+                  className="bg-green-600 items-center p-2 rounded-lg "
+                >
+                  <Text className="text-white text-lg">Sign In</Text>
+                </Pressable>
+              </View>
+              <View style={styles.verticallySpaced}>
+                <Pressable
+                  disabled={loading}
+                  onPress={() => signUpWithEmail()}
+                  className="bg-black items-center p-2 rounded-lg "
+                >
+                  <Text className="text-white text-lg">Sign Up</Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );

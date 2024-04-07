@@ -4,9 +4,14 @@ import { Stack } from "expo-router";
 
 const home = () => {
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <Stack.Screen options={{ headerTitle: "TalkPal" }} />
-      <Text className="text-white p-4 text-xl">Home</Text>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: "#FFF9ED" }}>
+      <Stack.Screen
+        options={{
+          headerTitle: "TalkPal",
+          headerStyle: { backgroundColor: "#92C4B3" },
+        }}
+      />
+      <Text className="text-black p-4 text-2xl">Your Friends</Text>
     </SafeAreaView>
   );
 };
