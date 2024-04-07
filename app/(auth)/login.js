@@ -28,6 +28,7 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassWord, setShowPassWord] = useState(true);
 
   async function signInWithEmail() {
     setLoading(true);
@@ -56,6 +57,11 @@ export default function Auth() {
     setLoading(false);
   }
 
+  const handleShowPassWord = () => {
+    setShowPassWord((prev) => !prev);
+    console.log(showPassWord);
+  };
+
   return (
     <View className="w-full h-full">
       <ImageBackground source={LoginImage} className="w-full h-full" />
@@ -72,20 +78,36 @@ export default function Auth() {
               value={email}
               placeholder="email@address.com"
               autoCapitalize={"none"}
-              className="py-2 border-2 border-black rounded-lg px-3"
+              className="py-2 border-2 border-black rounded-lg bg-white px-3"
             />
           </View>
           <View style={styles.verticallySpaced}>
             <Text className="text-2xl pb-1">Password</Text>
-            <TextInput
-              label="Password"
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              secureTextEntry={true}
-              placeholder="Password"
-              autoCapitalize={"none"}
-              className="py-2 border-2 border-black rounded-lg px-3"
-            />
+            <View>
+              <View>
+                <TextInput
+                  label="Password"
+                  onChangeText={(text) => setPassword(text)}
+                  value={password}
+                  secureTextEntry={showPassWord}
+                  placeholder="Password"
+                  autoCapitalize={"none"}
+                  className="py-2 border-2 border-black rounded-lg bg-white px-3"
+                />
+              </View>
+              <View className="absolute w-full h-full items-end">
+                <Pressable
+                  onPress={() => handleShowPassWord()}
+                  className="bg-black px-5 rounded-r-lg  h-full justify-center"
+                >
+                  {showPassWord ? (
+                    <Text className="text-white">Show</Text>
+                  ) : (
+                    <Text className="text-white">Hide</Text>
+                  )}
+                </Pressable>
+              </View>
+            </View>
           </View>
           {loading ? (
             <ActivityIndicator color="black" className="pt-10" size={25} />
