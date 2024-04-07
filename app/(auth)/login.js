@@ -54,7 +54,9 @@ export default function Auth() {
 
   return (
     <View className="h-full px-5">
-      <Stack.Screen options={{ headerShown: false, headerTitle: "Login" }} />
+      <Stack.Screen
+        options={{ headerTitle: "Login", headerTitleAlign: "center" }}
+      />
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Text className="text-2xl pb-2">Email</Text>
         <TextInput

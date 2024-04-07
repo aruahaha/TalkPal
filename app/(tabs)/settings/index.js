@@ -1,6 +1,7 @@
 import { View, Text, Alert, Button } from "react-native";
 import React, { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase-client";
+import { supabase } from "../../lib/supabase-client";
+import { Stack } from "expo-router";
 
 const SettingsPage = () => {
   const [user, setUser] = useState(null);
@@ -22,6 +23,7 @@ const SettingsPage = () => {
   };
   return (
     <View className="items-center ">
+      <Stack.Screen options={{ headerTitle: "Settings" }} />
       <Text className="py-5">{JSON.stringify(user)}</Text>
       <Button title="Logout" onPress={logOut} />
     </View>
