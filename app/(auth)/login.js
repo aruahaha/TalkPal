@@ -10,6 +10,7 @@ import {
   Pressable,
   ImageBackground,
   ActivityIndicator,
+  StatusBar,
 } from "react-native";
 import { supabase } from "../lib/supabase-client";
 import { Stack } from "expo-router";
@@ -58,6 +59,7 @@ export default function Auth() {
   return (
     <View className="w-full h-full">
       <ImageBackground source={LoginImage} className="w-full h-full" />
+      <StatusBar />
       <Stack.Screen options={{ headerShown: false }} />
       <View className="absolute w-full items-center justify-center h-full top-[175px]">
         <View className="w-72">
