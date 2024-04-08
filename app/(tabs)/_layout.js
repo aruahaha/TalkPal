@@ -9,6 +9,7 @@ const TabLayout = () => {
         tabBarStyle: {
           height: 70,
           backgroundColor: "#92C4B3",
+          paddingTop: 10,
         },
         tabBarActiveTintColor: "black",
         tabBarInactiveTintColor: "#FFF9ED",
@@ -19,8 +20,9 @@ const TabLayout = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="home" size={30} color={color} />
+            <FontAwesome name="home" size={35} color={color} />
           ),
+          tabBarLabel: "",
         }}
       />
 
@@ -29,8 +31,9 @@ const TabLayout = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <Feather name="settings" size={30} color={color} />
+            <Feather name="settings" size={35} color={color} />
           ),
+          tabBarLabel: "",
         }}
       />
     </Tabs>
