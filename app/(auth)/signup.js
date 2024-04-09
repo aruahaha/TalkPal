@@ -61,7 +61,7 @@ const signup = () => {
       <View className="absolute w-full items-center justify-center h-full top-[175px]">
         <View className="w-72">
           <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Text className="text-center pb-5 text-2xl font-bold">SignUp</Text>
+            <Text className="text-center text-2xl font-bold">SignUp</Text>
             <Text className="text-2xl pb-1">Email</Text>
             <TextInput
               label="Email"
@@ -69,18 +69,18 @@ const signup = () => {
               value={email}
               placeholder="email@address.com"
               autoCapitalize={"none"}
-              className="py-2 border-2 border-black rounded-lg bg-white px-3"
+              className="py-1 border-2 border-black rounded-lg bg-white px-3"
             />
           </View>
           <View>
-            <Text className="text-2xl pb-1">User Name</Text>
+            <Text className="text-2xl pb-1">Username</Text>
             <TextInput
               label="Name"
               onChangeText={(text) => setUserName(text)}
               value={userName}
               placeholder="Display Name"
               autoCapitalize={"none"}
-              className="py-2 border-2 border-black rounded-lg bg-white px-3"
+              className="py-1 border-2 border-black rounded-lg bg-white px-3"
             />
           </View>
           <View style={styles.verticallySpaced}>
@@ -94,13 +94,13 @@ const signup = () => {
                   secureTextEntry={showPassWord}
                   placeholder="Password"
                   autoCapitalize={"none"}
-                  className="py-2 border-2 border-black rounded-lg bg-white px-3"
+                  className="py-1 border-2 border-black rounded-lg bg-white px-3"
                 />
               </View>
               <View className="absolute w-full h-full items-end">
                 <Pressable
                   onPress={() => handleShowPassWord()}
-                  className="bg-black px-5 rounded-r-lg  h-full justify-center"
+                  className="bg-black px-5 rounded-r-lg h-full justify-center"
                 >
                   {showPassWord ? (
                     <Text className="text-white">Show</Text>
@@ -119,7 +119,7 @@ const signup = () => {
                 <Pressable
                   disabled={loading}
                   onPress={() => signUpWithEmail()}
-                  className="bg-black items-center p-2 rounded-lg "
+                  className="bg-black items-center p-1 rounded-lg "
                 >
                   <Text className="text-white text-lg">Sign Up</Text>
                 </Pressable>

@@ -12,11 +12,26 @@ import React, { useEffect, useState, useRef } from "react";
 import { Stack } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import socket from "../socket";
+import { supabase } from "../lib/supabase-client";
 
 const ChatScreen = () => {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
-  const [username, setUsername] = useState("");
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setUser(user);
+        setLoading(false);
+      } else {
+        Alert.alert("Error Accessing User");
+        setLoading(false);
+      }
+    });
+  }, []);
+
   const scrollViewRef = useRef();
 
   const sendMessage = async () => {
@@ -28,7 +43,7 @@ const ChatScreen = () => {
           new Date(Date.now()).getHours() +
           ":" +
           new Date(Date.now()).getMinutes(),
-        user: username,
+        user: user?.user_metadata?.name,
       };
       socket.emit("send_message", messageData);
       setMessageList((list) => [...list, messageData]);
@@ -36,7 +51,6 @@ const ChatScreen = () => {
       scrollViewRef.current.scrollToEnd({ animated: true });
     }
   };
-
   useEffect(() => {
     const receiveMessageHandler = (data) => {
       setMessageList((list) => [...list, data]);
@@ -53,16 +67,6 @@ const ChatScreen = () => {
 
   return (
     <View className="flex-1 w-full h-full bg-[#FFF9ED]">
-      {username.length < 5 && (
-        <View style={{ padding: 10 }}>
-          <TextInput
-            style={{ borderWidth: 1, padding: 5 }}
-            placeholder="Enter your username"
-            value={username}
-            onChangeText={(value) => setUsername(value)}
-          />
-        </View>
-      )}
       <Stack.Screen
         options={{
           headerTitle: "ChatArea",
@@ -77,7 +81,7 @@ const ChatScreen = () => {
           {messageList.map((item, index) => (
             <View
               className={
-                item.user === username
+                item.user === user?.user_metadata?.name
                   ? "items-end my-1 mx-5"
                   : "items-start my-1 mx-5"
               }
@@ -86,7 +90,7 @@ const ChatScreen = () => {
               <Text>{item.user}</Text>
               <Text
                 className={
-                  item.user === username
+                  item.user === user?.user_metadata?.name
                     ? "bg-bgColor p-3 rounded-l-lg rounded-tr-lg"
                     : "bg-gray-300 p-3 rounded-r-lg rounded-tl-lg"
                 }
