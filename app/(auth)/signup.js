@@ -18,6 +18,7 @@ import LoginImage from "../../assets/images/LoginImage.png";
 
 const signup = () => {
   const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassWord, setShowPassWord] = useState(true);
@@ -30,6 +31,11 @@ const signup = () => {
     } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        data: {
+          name: userName,
+        },
+      },
     });
 
     if (error) Alert.alert(error.message);
@@ -62,6 +68,17 @@ const signup = () => {
               onChangeText={(text) => setEmail(text)}
               value={email}
               placeholder="email@address.com"
+              autoCapitalize={"none"}
+              className="py-2 border-2 border-black rounded-lg bg-white px-3"
+            />
+          </View>
+          <View>
+            <Text className="text-2xl pb-1">User Name</Text>
+            <TextInput
+              label="Name"
+              onChangeText={(text) => setUserName(text)}
+              value={userName}
+              placeholder="Display Name"
               autoCapitalize={"none"}
               className="py-2 border-2 border-black rounded-lg bg-white px-3"
             />
