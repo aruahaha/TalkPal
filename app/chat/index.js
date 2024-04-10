@@ -87,7 +87,9 @@ const ChatScreen = () => {
               }
               key={index}
             >
-              <Text>{item.user}</Text>
+              <Text>
+                {item.user === user?.user_metadata?.name ? "You" : item.user}
+              </Text>
               <Text
                 className={
                   item.user === user?.user_metadata?.name
