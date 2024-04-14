@@ -20,7 +20,7 @@ const HomePage = () => {
   const [rows, setRows] = useState();
   const fetchTable = async () => {
     const table = await getTable();
-    setRows(table);
+    setRows(table.filter((item) => item?.socketId));
   };
 
   useEffect(() => {
