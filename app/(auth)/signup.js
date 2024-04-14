@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   StyleSheet,
@@ -21,10 +21,34 @@ const signup = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [takenUsernames, setTakenUsernames] = useState([]);
   const [showPassWord, setShowPassWord] = useState(true);
+
+  useEffect(() => {
+    const getTable = async () => {
+      let { data: TalkPal, error } = await supabase.from("TalkPal").select("*");
+      if (error) {
+        console.log(error);
+      }
+      if (TalkPal) {
+        setTakenUsernames(TalkPal);
+      }
+    };
+    getTable();
+  }, []);
 
   async function signUpWithEmail() {
     setLoading(true);
+
+    const isUsernameTaken = takenUsernames?.some(
+      (user) => user?.name === userName
+    );
+    if (isUsernameTaken) {
+      Alert.alert("Username already exists. Please choose a different one.");
+      setLoading(false);
+      return;
+    }
+
     const {
       data: { session },
       error,
@@ -38,8 +62,15 @@ const signup = () => {
       },
     });
 
+    const addRow = async () => {
+      const { data, error } = await supabase
+        .from("TalkPal")
+        .insert([{ email: email, name: userName }]);
+    };
+
     if (error) Alert.alert(error.message);
     if (!session) {
+      addRow();
       Alert.alert("Please check your inbox for email verification!");
     }
     setLoading(false);

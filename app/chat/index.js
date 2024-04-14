@@ -7,37 +7,59 @@ import {
   Alert,
   FlatList,
   Keyboard,
+  BackHandler,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import socket from "../socket";
 import { supabase } from "../lib/supabase-client";
+import { getTable } from "../api/api";
+import { Ionicons } from "@expo/vector-icons";
 
 const ChatScreen = () => {
   const [currentMessage, setCurrentMessage] = useState("");
+  const [receiver, setReceiver] = useState("");
   const [messageList, setMessageList] = useState([]);
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  const [rows, setRows] = useState([]);
 
   useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        router.push("/");
+        setMessageList([]);
+        socket.disconnect();
+        return true;
+      }
+    );
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         setUser(user);
-        setLoading(false);
       } else {
         Alert.alert("Error Accessing User");
-        setLoading(false);
       }
     });
+    const fetchTable = async () => {
+      const table = await getTable();
+      setRows(table);
+    };
+    fetchTable();
+    socket.on("receiver", (receiver) => {
+      setReceiver(receiver);
+    });
+    return () => {
+      backHandler.remove();
+    };
   }, []);
-
   const scrollViewRef = useRef();
 
   const sendMessage = async () => {
     if (currentMessage !== "") {
       const messageData = {
-        room: "ChatArea",
+        receiverId: receiver.socketId,
         message: currentMessage,
         time:
           new Date(Date.now()).getHours() +
@@ -69,7 +91,22 @@ const ChatScreen = () => {
     <View className="flex-1 w-full h-full bg-[#FFF9ED]">
       <Stack.Screen
         options={{
-          headerTitle: "ChatArea",
+          headerTitle: receiver.name,
+          headerLeft: () => (
+            <Ionicons
+              name="arrow-back"
+              size={20}
+              color="black"
+              onPress={() => {
+                router.push("/");
+                setMessageList([]);
+                socket.disconnect();
+              }}
+              style={{
+                paddingRight: 20,
+              }}
+            />
+          ),
         }}
       />
       <View className="h-full w-full justify-between">
