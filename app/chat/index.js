@@ -10,7 +10,7 @@ import {
   BackHandler,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
-import { Stack, router } from "expo-router";
+import { Link, Stack, router } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import socket from "../socket";
 import { supabase } from "../lib/supabase-client";
@@ -18,23 +18,15 @@ import { getTable } from "../api/api";
 import { Ionicons } from "@expo/vector-icons";
 
 const ChatScreen = () => {
+  const [sender, setSender] = useState();
   const [currentMessage, setCurrentMessage] = useState("");
   const [receiver, setReceiver] = useState("");
   const [messageList, setMessageList] = useState([]);
   const [user, setUser] = useState(null);
-
   const [rows, setRows] = useState([]);
+  const [status, setStatus] = useState();
 
   useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => {
-        router.push("/");
-        setMessageList([]);
-        socket.disconnect();
-        return true;
-      }
-    );
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         setUser(user);
@@ -42,37 +34,45 @@ const ChatScreen = () => {
         Alert.alert("Error Accessing User");
       }
     });
+
     const fetchTable = async () => {
       const table = await getTable();
       setRows(table);
     };
+
     fetchTable();
+
     socket.on("receiver", (receiver) => {
       setReceiver(receiver);
     });
-    return () => {
-      backHandler.remove();
-    };
+    socket.on("status", (data) => {
+      setStatus(data.offlineUser);
+    });
   }, []);
   const scrollViewRef = useRef();
 
   const sendMessage = async () => {
     if (currentMessage !== "") {
+      const now = new Date();
+      const hours = now.getHours() % 12 || 12;
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? "PM" : "AM";
+      const time =
+        hours + ":" + (minutes < 10 ? "0" : "") + minutes + " " + ampm;
       const messageData = {
         receiverId: receiver.socketId,
         message: currentMessage,
-        time:
-          new Date(Date.now()).getHours() +
-          ":" +
-          new Date(Date.now()).getMinutes(),
+        time: time,
         user: user?.user_metadata?.name,
       };
+      setSender(user?.user_metadata?.name);
       socket.emit("send_message", messageData);
       setMessageList((list) => [...list, messageData]);
       setCurrentMessage("");
       scrollViewRef.current.scrollToEnd({ animated: true });
     }
   };
+
   useEffect(() => {
     const receiveMessageHandler = (data) => {
       setMessageList((list) => [...list, data]);
@@ -93,19 +93,15 @@ const ChatScreen = () => {
         options={{
           headerTitle: receiver.name,
           headerLeft: () => (
-            <Ionicons
-              name="arrow-back"
-              size={20}
-              color="black"
+            <Link
+              href="/"
               onPress={() => {
-                router.push("/");
                 setMessageList([]);
                 socket.disconnect();
               }}
-              style={{
-                paddingRight: 20,
-              }}
-            />
+            >
+              Back
+            </Link>
           ),
         }}
       />
@@ -119,48 +115,64 @@ const ChatScreen = () => {
             <View
               className={
                 item.user === user?.user_metadata?.name
-                  ? "items-end my-1 mx-5"
-                  : "items-start my-1 mx-5"
+                  ? "items-end my-1 mx-5 relative"
+                  : "items-start my-1 mx-5 relative"
               }
               key={index}
             >
-              <Text>
-                {item.user === user?.user_metadata?.name ? "You" : item.user}
-              </Text>
-              <Text
+              <View
                 className={
                   item.user === user?.user_metadata?.name
-                    ? "bg-bgColor p-3 rounded-l-lg rounded-tr-lg"
-                    : "bg-gray-300 p-3 rounded-r-lg rounded-tl-lg"
+                    ? "bg-bgColor p-3 rounded-l-lg rounded-lg  relative "
+                    : "bg-gray-300 p-3 rounded-r-lg rounded-lg  relative"
                 }
               >
-                {item.message}
-              </Text>
-              <Text>{item.time}</Text>
+                <View className="w-[70%]">
+                  <Text className="mb-1 text-[16px]">{item.message}</Text>
+                  <Text
+                    className={
+                      item.user === user?.user_metadata?.name
+                        ? "text-gray-600 text-[10px] font-bold text-left"
+                        : "text-gray-600 text-[10px] font-bold text-right"
+                    }
+                  >
+                    {item.time}
+                  </Text>
+                </View>
+                <View
+                  className={
+                    index === 0 ||
+                    (index > 0 && item.user !== messageList[index - 1].user)
+                      ? item.user === user?.user_metadata?.name
+                        ? "absolute right-0 h-5 w-5  bg-bgColor top-0 transform translate-x-1 -translate-y-[3.7px] rounded-tl-[20px]  rotate-45"
+                        : "absolute left-0 h-5 w-5  bg-gray-300 top-0 transform -translate-x-1 -translate-y-[3.7px] rounded-tl-[20px] rotate-45"
+                      : ""
+                  }
+                ></View>
+              </View>
             </View>
           ))}
         </ScrollView>
-        <View className="w-full">
-          <View>
-            <View className="flex-row w-[80%] justify-between ">
-              <View className="w-full">
-                <TextInput
-                  className="border-2 px-5 text-black bg-bgColor"
-                  multiline={true}
-                  numberOfLines={3}
-                  placeholder="Type your message.."
-                  value={currentMessage}
-                  onChangeText={(value) => setCurrentMessage(value)}
-                />
-              </View>
-              <View className="justify-center items-center w-[25%] border-2">
-                <Pressable className="" onPress={() => sendMessage()}>
-                  <Text>
-                    <FontAwesome name="send" size={24} color="black" />
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
+        <View className="flex-row w-full justify-between mb-4 px-4 h-14">
+          <View className="w-3/4">
+            <TextInput
+              className="h-full px-3 bg-[#31363F] text-white rounded-l-lg"
+              multiline={true}
+              numberOfLines={3}
+              placeholder="Type your message...."
+              placeholderTextColor="white"
+              value={currentMessage}
+              onChangeText={(value) => setCurrentMessage(value)}
+            />
+          </View>
+          <View className="justify-center items-center w-1/4 bg-[#31363F] rounded-r-lg ">
+            {currentMessage.length > 0 ? (
+              <Pressable onPress={() => sendMessage()}>
+                <FontAwesome name="send" size={24} color="white" />
+              </Pressable>
+            ) : (
+              <></>
+            )}
           </View>
         </View>
       </View>
